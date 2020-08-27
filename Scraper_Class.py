@@ -169,18 +169,19 @@ class RightMoveScrapper:
             print("I'm on page " + str(page_index/24))
 
 
+if __name__ == "__main__":
 
-example_search = {
-    "search_area": "REGION%5E475",
-    "max_bedrooms": 3,
-    "min_bedrooms": 1,
-    "max_price": 280000,
-    "min_price": None,
-    "show_house_type": ["flat", "detached", "semi-detached", "terraced"],
-    "must_have": [],
-    "dont_show": []
-}
+    example_search = {
+        "search_area": "REGION%5E475",
+        "max_bedrooms": 3,
+        "min_bedrooms": 1,
+        "max_price": 280000,
+        "min_price": None,
+        "show_house_type": ["flat", "detached", "semi-detached", "terraced"],
+        "must_have": [],
+        "dont_show": []
+    }
 
-x = RightMoveScrapper(**example_search)
+    x = RightMoveScrapper(**example_search)
 
-print(x.scrape())
+    x.scrape()

@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from flask_restful import Api, Resource, reqparse
+from Scraper_Class import RightMoveScrapper
 
 app = Flask(__name__)
 api = Api(app)
@@ -27,32 +28,27 @@ def generate_id():
     return this_task
 
 
+object_dictionary = {}
+
 new_search_args = reqparse.RequestParser()
 new_search_args.add_argument("search_area", type=str)
 new_search_args.add_argument("max_bedrooms", type=int)
 new_search_args.add_argument("min_bedrooms", type=int)
 new_search_args.add_argument("max_price", type=int)
 new_search_args.add_argument("min_price", type=int)
-new_search_args.add_argument("show_bungalow", type=bool)
-new_search_args.add_argument("show_detached", type=bool)
-new_search_args.add_argument("show_semi-detached", type=bool)
-new_search_args.add_argument("show_terraced", type=bool)
-new_search_args.add_argument("show_flat", type=bool)
-new_search_args.add_argument("show_land", type=bool)
-new_search_args.add_argument("must_have_garden", type=bool)
-new_search_args.add_argument("must_have_parking", type=bool)
-new_search_args.add_argument("dont_show_new-home", type=bool)
-new_search_args.add_argument("dont_show_retirement", type=bool)
-new_search_args.add_argument("dont_show_shared-ownership", type=bool)
+new_search_args.add_argument("show_house_type", action="append")
+new_search_args.add_argument("must_have", action="append")
+new_search_args.add_argument("dont_show", action="append")
 
 
 class NewSearch(Resource):
     def put(self):
         args = new_search_args.parse_args()
         search_id = generate_id()
-        search_accepted = {}
-        search_accepted["ID"] = search_id
-        search_accepted["URI"] = BASE + "pending/" + str(search_id)
+        search_accepted = {"ID": search_id, "URI": BASE + "pending/" + str(search_id)}
+        rightmove_scraper = RightMoveScrapper(**args)
+        results = rightmove_scraper.scrape()
+        print(results)
         return search_accepted, 202
 
 
