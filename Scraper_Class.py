@@ -9,7 +9,6 @@ import json
 
 
 class RightMoveScrapper:
-
     URL_initial = "https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier="
 
     def __init__(self, **kwargs):
@@ -23,6 +22,9 @@ class RightMoveScrapper:
         self.dont_show = kwargs.get("dont_show")
 
     def build_url(self, page_number):
+
+        URL_to_build = self.URL_initial
+
         def populate_house_type(house_types):
             output_sting = "&propertyTypes="
             if house_types:
@@ -48,27 +50,28 @@ class RightMoveScrapper:
                 return ""
 
         if self.search_area:
-            self.URL_initial = self.URL_initial + self.search_area
+            URL_to_build = URL_to_build + self.search_area
         if self.max_bedrooms:
-            self.URL_initial = self.URL_initial + "&maxBedrooms={}".format(self.max_bedrooms)
+            URL_to_build = URL_to_build + "&maxBedrooms={}".format(self.max_bedrooms)
         if self.min_bedrooms:
-            self.URL_initial = self.URL_initial + "&minBedrooms={}".format(self.min_bedrooms)
+            URL_to_build = URL_to_build + "&minBedrooms={}".format(self.min_bedrooms)
         if self.max_price:
-            self.URL_initial = self.URL_initial + "&maxPrice={}".format(self.max_price)
+            URL_to_build = URL_to_build + "&maxPrice={}".format(self.max_price)
         if self.min_price:
-            self.URL_initial = self.URL_initial + "&minPrice={}".format(self.min_price)
-        self.URL_initial = self.URL_initial + "&index={}".format(page_number)
-        self.URL_initial = self.URL_initial + populate_house_type(self.show_house_type)
-        self.URL_initial = self.URL_initial + populate_must_have(self.must_have)
-        self.URL_initial = self.URL_initial + populate_dont_show(self.must_have)
-        print(self.URL_initial)
-        return self.URL_initial
+            URL_to_build = URL_to_build + "&minPrice={}".format(self.min_price)
+        URL_to_build = URL_to_build + "&index={}".format(page_number)
+        URL_to_build = URL_to_build + populate_house_type(self.show_house_type)
+        URL_to_build = URL_to_build + populate_must_have(self.must_have)
+        URL_to_build = URL_to_build + populate_dont_show(self.must_have)
+        print(URL_to_build)
+        return URL_to_build
 
     def scrape(self):
 
-        URL_to_scrape = self.build_url(0)
-        completed_all_pages = False
         page_index = 0
+        URL_to_scrape = self.build_url(page_index)
+        print("Am I being called?")
+        completed_all_pages = False
         output_dict = {}
 
         def get_date(date_string):
@@ -151,7 +154,7 @@ class RightMoveScrapper:
                                          "Price": price,
                                          "Number of Rooms": num_rooms,
                                          "House Type": house_type,
-                                         "Date Listed": date,
+                                         "Date Listed": date.strftime("%d/%m/%Y"),
                                          "Postcode": postcode
                                          }
                         output_dict[ref_number] = house_details
@@ -180,4 +183,4 @@ example_search = {
 
 x = RightMoveScrapper(**example_search)
 
-x.scrape()
+print(x.scrape())
