@@ -1,19 +1,19 @@
 https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=REGION%5E475&maxBedrooms=3&minBedrooms=1&maxPrice=270000&sortType=6&propertyTypes=bungalow%2Cdetached%2Cflat%2Cland%2Cpark-home%2Csemi-detached%2Cterraced&includeSSTC=false&mustHave=garden%2Cparking&dontShow=newHome%2Cretirement%2CsharedOwnership&furnishTypes=&keywords=
 
 
-Field (in plain engrishu) - JSON variable name - notes
+Field (in plain engrishu) -     JSON variable name - notes
 
-1. Search Area - search_area - sting, cannot be null, is a proprietary rightmove argument, not sure how we get this (yet!)
-2. Maximum number of Bedrooms - max_bedrooms - int, can be null
-3. Minimum number of Bedrooms - min_bedrooms - int, can be null
-4. Maximum price - max_price - int, can be null
-5. Minimum price - min_price - int can be null
-6. Show property type - show_house_type - JSON list ie // key: ["value", "value"] //, can be null which shows all.
+1. Search Area -                search_area -       sting, cannot be null, is a proprietary rightmove argument, not sure how we get this (yet!)
+2. Maximum number of Bedrooms - max_bedrooms -      int, can be null
+3. Minimum number of Bedrooms - min_bedrooms -      int, can be null
+4. Maximum price -              max_price -         int, can be null
+5. Minimum price - min_price -  int can be null
+6. Show property type -         show_house_type -   JSON list ie // key: ["value", "value"] //, can be null which shows all.
     Accepted values are ONLY the following strings "flat", "detached", "semi-detached", "terraced", "bungalow", "land", "park-home"
-13. Must haves - must_have - JSON List, can be null.
-    Accepted values are ONLY the following string "garden", "parking"
-15. Don't show - dont_show - JSON List, can be null.
-    Accepted values are "newHome", "retirement", "sharedOwnership"
+7. Must haves -                 must_have -         JSON List, can be null.
+    Accepted values are ONLY the following strings "garden", "parking"
+8. Don't show -                 dont_show -         JSON List, can be null.
+    Accepted values are ONLY the following strings "newHome", "retirement", "sharedOwnership"
 
 template...
 
@@ -22,38 +22,7 @@ template...
 "min_bedrooms" : ,
 "max_price" : ,
 "min_price" : ,
-"show_bungalow": True,
-"show_detached": True,
-"show_semi-detached": True,
-"show_terraced": True,
-"show_flat": True,
-"show_land": True,
-"must_have_garden" : False,
-"must_have_parking" : False,
-"dont_show_new-home" : False,
-"dont_show_retirement": False,
-"dont_show_shared-ownership": False
+"show_house_type": ["flat", "detached", "semi-detached", "terraced", "bungalow", "land", "park-home"]
+"must_have" : ["garden", "parking"]
+"dont_show" : ["newHome", "retirement", "sharedOwnership"]
 }
-
-
-
-
-
-JUNK
-
-        self.search_area = kwargs.get("search_area")
-        self.max_bedrooms = kwargs.get("max_bedrooms", None)
-        self.min_bedrooms = kwargs.get("min_bedrooms", None)
-        self.max_price = kwargs.get("max_price", None)
-        self.min_price = kwargs.get("min_price", None)
-        self.show_bungalow = kwargs.get("show_bungalow", True)
-        self.show_detached = kwargs.get("show_detached", True)
-        self.show_semi = kwargs.get("show_semi-detached", True)
-        self.show_terraced = kwargs.get("show_terraced", True)
-        self.show_flat = kwargs.get("show_flat", True)
-        self.show_land = kwargs.get("show_land", False)
-        self.must_have_garden = kwargs.get("must_have_garden", False)
-        self.must_have_parking = kwargs.get("must_have_parking", False)
-        self.dont_show_new = kwargs.get("dont_show_new-home", False)
-        self.dont_show_retirement = kwargs.get("dont_show_retirement", False)
-        self.dont_show_shared = kwargs.get("dont_show_shared-ownership", False)
