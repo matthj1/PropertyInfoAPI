@@ -1,25 +1,19 @@
 https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=REGION%5E475&maxBedrooms=3&minBedrooms=1&maxPrice=270000&sortType=6&propertyTypes=bungalow%2Cdetached%2Cflat%2Cland%2Cpark-home%2Csemi-detached%2Cterraced&includeSSTC=false&mustHave=garden%2Cparking&dontShow=newHome%2Cretirement%2CsharedOwnership&furnishTypes=&keywords=
 
 
-Field (in plain engrish) - JSON variable name - notes
+Field (in plain engrishu) - JSON variable name - notes
 
 1. Search Area - search_area - sting, cannot be null, is a proprietary rightmove argument, not sure how we get this (yet!)
 2. Maximum number of Bedrooms - max_bedrooms - int, can be null
 3. Minimum number of Bedrooms - min_bedrooms - int, can be null
 4. Maximum price - max_price - int, can be null
 5. Minimum price - min_price - int can be null
-6. Show bungalow - show_bungalow - bool, cannot be null, default to True
-7. Show detached - show_detached - bool, cannot be null, default to True
-8. Show semi-detached - show_semi-detached - bool, cannot be null, default to True
-9. Show terraced - show_terraced - bool, cannot be null, default to True
-10. Show flat - show_flat - bool, cannot be null, default to True
-11. Show park home - show_park-home - bool, cannot be null, default to True
-12. Show land - show_land - bool, cannot be null, default to True
-13. Must have garden - must_have_garden - bool, cannot be null, defaults to False
-14. Must have parking - must_have_parking - bool, cannot be null, defaults to False
-15. Don't show new home - dont_show_new-home - bool, cannot be null, defaults to False
-16. Don't show retirement - dont_show_retirement - bool, cannot be null, defaults to False
-17. Don't show shared ownership - dont_show_shared-ownership - bool, cannot be nul, defaults to False
+6. Show property type - show_house_type - JSON list ie // key: ["value", "value"] //, can be null which shows all.
+    Accepted values are ONLY the following strings "flat", "detached", "semi-detached", "terraced", "bungalow", "land", "park-home"
+13. Must haves - must_have - JSON List, can be null.
+    Accepted values are ONLY the following string "garden", "parking"
+15. Don't show - dont_show - JSON List, can be null.
+    Accepted values are "newHome", "retirement", "sharedOwnership"
 
 template...
 

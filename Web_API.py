@@ -1,6 +1,9 @@
 from flask import Flask, jsonify
 from flask_restful import Api, Resource, reqparse
 from Scraper_Class import RightMoveScrapper
+import concurrent.futures
+
+executor = concurrent.futures.ThreadPoolExecutor()
 
 app = Flask(__name__)
 api = Api(app)
@@ -29,6 +32,7 @@ def generate_id():
 
 
 object_dictionary = {}
+returns_dictionary = {}
 
 new_search_args = reqparse.RequestParser()
 new_search_args.add_argument("search_area", type=str)
@@ -46,15 +50,20 @@ class NewSearch(Resource):
         args = new_search_args.parse_args()
         search_id = generate_id()
         search_accepted = {"ID": search_id, "URI": BASE + "pending/" + str(search_id)}
-        rightmove_scraper = RightMoveScrapper(**args)
-        results = rightmove_scraper.scrape()
-        print(results)
+        object_dictionary[search_id] = RightMoveScrapper(**args)
+        returns_dictionary[search_id] = executor.submit(object_dictionary[search_id].scrape)
+        print(object_dictionary)
+        print("I started a new task")
         return search_accepted, 202
 
 
 class CheckStatus(Resource):
     def get(self, search_id):
-        return {search_id:"Status Checked!"}
+        if search_id in returns_dictionary:
+            if returns_dictionary[search_id].running():
+                return "Search in progress"
+            if returns_dictionary[search_id].done():
+                return returns_dictionary[search_id].result()
 
 
 class ReturnResults(Resource):

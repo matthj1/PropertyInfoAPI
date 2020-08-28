@@ -1,4 +1,5 @@
 import requests
+import time
 
 BASE = "http://127.0.0.1:5000/"
 
@@ -16,8 +17,13 @@ response = requests.put(BASE, {
 print(response.json())
 print(response)
 
-response2 = requests.get("http://127.0.0.1:5000/pending/0")
-print(response2.json())
-
-response3 = requests.get("http://127.0.0.1:5000/completed/0")
-print(response3.json())
+if response:
+    uri_progress = response.json()["URI"]
+    pending_request = requests.get(uri_progress)
+    print(pending_request.json() + " is pending request")
+    while pending_request.json() == "Search in progress":
+        print("Waiting for request to finish")
+        time.sleep(5.0)
+        pending_request = requests.get(uri_progress)
+    data = requests.get(uri_progress)
+    print(data.json())

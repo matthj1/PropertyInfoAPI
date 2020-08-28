@@ -164,6 +164,9 @@ class RightMoveScrapper:
                     completed_all_pages = True
                     print("Finished!")
                     return output_dict
+                except IndexError:
+                    print("Something wrong with the scrape. Please try again")
+                    return "Something wrong with the scrape. Please try again"
             page_index = page_index + 24
             URL_to_scrape = self.build_url(page_index)
             print("I'm on page " + str(page_index/24))
