@@ -4,8 +4,6 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import datetime
-import csv
-import json
 
 
 class RightMoveScrapper:
@@ -70,7 +68,6 @@ class RightMoveScrapper:
 
         page_index = 0
         URL_to_scrape = self.build_url(page_index)
-        print("Am I being called?")
         completed_all_pages = False
         output_dict = {}
 
@@ -117,16 +114,29 @@ class RightMoveScrapper:
         def get_house_type(house_string):
             semi_find = re.compile("semi-detached")
             detached_find = re.compile("\sdetached")
-            if "flat" in house_string:
+            if "flat" in house_string.lower():
                 return "flat"
-            elif semi_find.search(house_string):
+            elif semi_find.search(house_string.lower()):
                 return "semi-detached"
-            elif detached_find.search(house_string):
+            elif detached_find.search(house_string.lower()):
                 return "detached"
-            elif "terraced" in house_string:
+            elif "terraced" in house_string.lower():
                 return "terraced"
+            elif "bungalow" in house_string.lower():
+                return "bungalow"
+            elif "land" in house_string.lower():
+                return "land"
+            elif "park-home" in house_string.lower():
+                return "park-home"
             else:
                 return "Unknown"
+
+        def parse_postcode(postcode):
+            postcode_parser = re.compile("[A-Z]{2}\d{1,2}(\s\d[A-Z][A-Z])?")
+            try:
+                return re.search(postcode_parser, postcode).group(0)
+            except AttributeError:
+                return None
 
         while not completed_all_pages:
             opening_page = requests.get(URL_to_scrape)
@@ -146,7 +156,11 @@ class RightMoveScrapper:
                     num_rooms = house.find("h2", {"class": "propertyCard-title"}).contents[0].strip()[0]
                     listed_date_search = house.find("span", {"class", "propertyCard-contactsAddedOrReduced"})
                     date = get_date(listed_date_search.contents[0])
-                    postcode = house.find("address", {"class": "propertyCard-address"}).span.contents[0].split(",")[-1].strip()
+                    postcode = parse_postcode(house.find("address", {"class": "propertyCard-address"}).span.contents[0])
+                    if postcode:
+                        location_if_not_postcode = None
+                    else:
+                        location_if_not_postcode = house.find("address", {"class": "propertyCard-address"}).span.contents[0].split(",")[-1].strip()
                     house_type_search = house.find("h2", {"class": "propertyCard-title"})
                     house_type = get_house_type(house_type_search.contents[0].strip())
                     if not featured:
@@ -155,11 +169,13 @@ class RightMoveScrapper:
                                          "Number of Rooms": num_rooms,
                                          "House Type": house_type,
                                          "Date Listed": date.strftime("%d/%m/%Y"),
-                                         "Postcode": postcode
+                                         "Postcode": postcode,
+                                         "LocationNoPc": location_if_not_postcode
                                          }
                         output_dict[ref_number] = house_details
                         for a, b in house_details.items():
-                            print(a, b)
+                            print(a + ": ", b)
+                        print("\n")
                 except TypeError:
                     completed_all_pages = True
                     print("Finished!")
