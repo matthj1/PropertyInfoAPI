@@ -1,5 +1,6 @@
 import requests
 import time
+import json
 
 BASE = "http://127.0.0.1:5000/"
 
@@ -28,3 +29,5 @@ if response:
     uri_complete = pending_request.json()["URI_Complete"]
     data = requests.get(uri_complete)
     print(data.json())
+    with open("data.json", "w") as json_file:
+        json.dump(data.json(), json_file)

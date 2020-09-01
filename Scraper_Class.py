@@ -152,10 +152,9 @@ class RightMoveScrapper:
                     else:
                         featured = False
                     ref_number = house.find("a", {"class", "propertyCard-additionalImgs"}).get("href")[28:36]
-                    price = house.find("div", {"class": "propertyCard-priceValue"}).contents[0].strip()
-                    num_rooms = house.find("h2", {"class": "propertyCard-title"}).contents[0].strip()[0]
-                    listed_date_search = house.find("span", {"class", "propertyCard-contactsAddedOrReduced"})
-                    date = get_date(listed_date_search.contents[0])
+                    price = int(house.find("div", {"class": "propertyCard-priceValue"}).contents[0].strip()[1:].replace(",", ""))
+                    num_rooms = int(house.find("h2", {"class": "propertyCard-title"}).contents[0].strip()[0])
+                    date = get_date(house.find("span", {"class", "propertyCard-contactsAddedOrReduced"}).contents[0])
                     postcode = parse_postcode(house.find("address", {"class": "propertyCard-address"}).span.contents[0])
                     if postcode:
                         location_if_not_postcode = None
