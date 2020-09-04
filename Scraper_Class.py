@@ -47,6 +47,24 @@ class RightMoveScrapper:
             else:
                 return ""
 
+        def round_price(price, min_max):
+            list_of_prices = [50000, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 130000, 140000, 150000, 160000,
+                              170000,
+                              175000, 180000, 190000, 200000, 210000, 220000, 230000, 240000, 250000, 260000, 270000,
+                              280000,
+                              290000, 300000, 325000, 350000, 375000, 400000, 425000, 450000, 475000, 500000, 550000,
+                              600000,
+                              650000, 700000, 800000, 900000, 1000000, 1250000, 1500000, 1750000, 2000000, 2500000,
+                              3000000,
+                              4000000, 5000000, 7500000, 10000000, 15000000, 20000000]
+            for position, price_item in enumerate(list_of_prices):
+                if min_max == "max":
+                    if price < price_item:
+                        return list_of_prices[position + 1]
+                else:
+                    if price < price_item:
+                        return list_of_prices[position]
+
         if self.search_area:
             URL_to_build = URL_to_build + self.search_area
         if self.max_bedrooms:
@@ -54,9 +72,9 @@ class RightMoveScrapper:
         if self.min_bedrooms:
             URL_to_build = URL_to_build + "&minBedrooms={}".format(self.min_bedrooms)
         if self.max_price:
-            URL_to_build = URL_to_build + "&maxPrice={}".format(self.max_price)
+            URL_to_build = URL_to_build + "&maxPrice={}".format(round_price(self.max_price, "max"))
         if self.min_price:
-            URL_to_build = URL_to_build + "&minPrice={}".format(self.min_price)
+            URL_to_build = URL_to_build + "&minPrice={}".format(round_price(self.min_price, "min"))
         URL_to_build = URL_to_build + "&index={}".format(page_number)
         URL_to_build = URL_to_build + populate_house_type(self.show_house_type)
         URL_to_build = URL_to_build + populate_must_have(self.must_have)
@@ -193,7 +211,7 @@ if __name__ == "__main__":
         "search_area": "REGION%5E475",
         "max_bedrooms": 3,
         "min_bedrooms": 1,
-        "max_price": 280000,
+        "max_price": 274030,
         "min_price": None,
         "show_house_type": ["flat", "detached", "semi-detached", "terraced"],
         "must_have": [],
