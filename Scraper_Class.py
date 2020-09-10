@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import datetime
+import json
 
 
 class RightMoveScrapper:
@@ -156,6 +157,23 @@ class RightMoveScrapper:
             except AttributeError:
                 return None
 
+        def get_coordinates(reference):
+            try:
+                URL_BASE = "https://www.rightmove.co.uk/property-for-sale/property-"
+                urlCoordinates = URL_BASE + str(reference) + ".html"
+                print(urlCoordinates)
+                pageHTML = requests.get(urlCoordinates).content
+                pageSoup = BeautifulSoup(pageHTML, features="lxml")
+                coordinateIn = str(pageSoup.find("a", {"class": "block js-tab-trigger js-ga-minimap"}))
+                findLatitude = re.compile("latitude=-?\d+\.\d+")
+                latitude = findLatitude.findall(coordinateIn)[0].split("=")[1]
+                findLongitude = re.compile("longitude=-?\d+\.\d+")
+                longitude = findLongitude.findall(coordinateIn)[0].split("=")[1]
+                return [float(latitude), float(longitude)]
+            except:
+                print("Error with coordinates")
+                return None
+
         while not completed_all_pages:
             opening_page = requests.get(URL_to_scrape)
             opening_page_content = opening_page.content
@@ -170,7 +188,10 @@ class RightMoveScrapper:
                     else:
                         featured = False
                     ref_number = house.find("a", {"class", "propertyCard-additionalImgs"}).get("href")[28:36]
-                    price = int(house.find("div", {"class": "propertyCard-priceValue"}).contents[0].strip()[1:].replace(",", ""))
+                    try:
+                        price = int(house.find("div", {"class": "propertyCard-priceValue"}).contents[0].strip()[1:].replace(",", ""))
+                    except ValueError:
+                        price = None
                     num_rooms = int(house.find("h2", {"class": "propertyCard-title"}).contents[0].strip()[0])
                     date = get_date(house.find("span", {"class", "propertyCard-contactsAddedOrReduced"}).contents[0])
                     postcode = parse_postcode(house.find("address", {"class": "propertyCard-address"}).span.contents[0])
@@ -187,7 +208,8 @@ class RightMoveScrapper:
                                          "House Type": house_type,
                                          "Date Listed": date.strftime("%d/%m/%Y"),
                                          "Postcode": postcode,
-                                         "LocationNoPc": location_if_not_postcode
+                                         "LocationNoPc": location_if_not_postcode,
+                                         "Coordinates": get_coordinates(ref_number)
                                          }
                         output_dict[ref_number] = house_details
                         for a, b in house_details.items():
@@ -195,6 +217,9 @@ class RightMoveScrapper:
                         print("\n")
                 except TypeError:
                     completed_all_pages = True
+                    with open("Edinburgh_Data.json", "w") as json_file:
+                        print("got here")
+                        json.dump(output_dict, json_file)
                     print("Finished!")
                     return output_dict
                 except IndexError:
@@ -209,13 +234,13 @@ if __name__ == "__main__":
 
     example_search = {
         "search_area": "REGION%5E475",
-        "max_bedrooms": 3,
-        "min_bedrooms": 1,
-        "max_price": 274030,
-        "min_price": None,
+        "max_bedrooms": 2,
+        "min_bedrooms": 2,
+        "max_price": 250000,
+        "min_price": 230000,
         "show_house_type": ["flat", "detached", "semi-detached", "terraced"],
         "must_have": [],
-        "dont_show": []
+        "dont_show": ["newHome"]
     }
 
     x = RightMoveScrapper(**example_search)
